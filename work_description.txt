@@ -1,0 +1,79 @@
+//FIRST PRACTICE WITH THE QEMU EMULATOR
+
+//by Marinsalti, Martín Nicolás
+
+
+//Create work space through commands based on "Building embedded Linux System" (K. Yaghmour)
+export PROJECT=dev_qemu_glibc
+export PROJECT_ROOT=`pwd`/${PROJECT} //path enviroment variable
+
+mkdir dev_qemu_glibc
+mkdir -p ${PROJECT_ROOT}/{bootloader/data,build-tools/data,buildroot/data,\
+download,doc,images,kernel/data,project,rootfs,sysapps/data,tmp,tools,bin}
+
+
+//The dev_qemu_glibc file is created to load enviroment variables when run as . dev_qemu_glib
+
+//Building a cross-compiling toolchain
+
+//Install the packages needed
+
+sudo apt-get install autoconf automake libtool libexpat1-dev \
+libncurses5-dev bison flex patch curl cvs texinfo git bc \
+build-essential subversion gawk python-dev gperf unzip \
+pkg-config wget help2man tree libtool-bin
+
+sudo apt-get install qemu //Qemu installation
+
+
+//Getting Crosstool-ng
+
+git clone https://github.com/crosstool-ng/crosstool-ng.git
+cd crosstool-ng/
+git checkout crosstool-ng-1.24.0
+
+//Building and Installing Crosstool-ng
+
+//We need to generate a cinfigure script and more generally all the generated files that are shipped  boostrap
+./bootstrap
+
+//Install Crosstool-ng it locally
+./configure --prefix=${PROJECT_ROOT}/build-tools/crosstool-ng
+make && make install
+
+//Load the vexpress-a9 sample
+./ct-ng arm-unknown-linux-gnueabi
+
+//Personal configuration is done:
+
+./ct-ng menuconfig
+
+In Path and misc options:
+ - Save intermediate steps (CT_DEBUG_CT_SAVE_STEPS)
+ - Local tarballs directory (CT_LOCAL_TARBALLS_DIR) to ${PROJECT_ROOT}/download
+ - Prefix directory (CT_PREFIX_DIR) to ${PROJECT_ROOT}/tools/${CT_TARGET}
+ - Disable render the toolchain read-only (CT_PREFIX_DIR_RO)
+ - Number of parallel jobs (CT_PARALLEL_JOBS) = 8
+ - Maximum log level to see to DEBUG (CT_LOG_DEBUG)
+
+In Target Options:
+- Architecture level (CT_ARCH_ARCH) = armv7-a
+- Tune for CPU (CT_ARCH_TUNE) = cortex-a9
+- Use specific FPU (CT_ARCH_FPU) = neon
+- Hardware (FPU) for Floating point: (CT_ARCH_FLOAT_HW)
+  
+Toolchain options: 
+- Toolchain ID string (CT_TOOLCHAIN_PKGVERSION) = Embedded Linux
+
+C-library:
+- extra config (CT_GLIBC_EXTRA_CONFIG_ARRAY) = --enable-obsolete-rpc
+
+Debug facilities:
+- Disable duma (CT_DEBUG_DUMA)
+
+Companion libraries:
+- Select Check the companion libraries builds (CT_COMPLIBS_CHECK)
+
+//Now it is built crosstool-ng
+./ct-ng build
+

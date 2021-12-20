@@ -2,6 +2,10 @@
 
 //by Marinsalti, Martín Nicolás
 
+//References: 
+    - Sistemas Embebidos Avanzados 1 (FCEIA-UNR): Linux Embebido Section
+    - Bootlin, embedded linux training: https://bootlin.com/doc/training/embedded-linux/
+
 
 //Create work space through commands based on "Building embedded Linux System" (K. Yaghmour)
 export PROJECT=dev_qemu_glibc
@@ -73,6 +77,13 @@ Debug facilities:
 
 Companion libraries:
 - Select Check the companion libraries builds (CT_COMPLIBS_CHECK)
+
+//The URLs of some packages were obsolete therefore we installed them manually before building
+
+wget https://distfiles.macports.org/isl/isl-0.20.tar.bz2
+wget https://sourceforge.net/projects/expat/files/expat/2.2.6/expat-2.2.6-RENAMED-VULNERABLE-PLEASE-USE-2.4.1-INSTEAD.tar.bz2
+mv isl-0.20.tar.bz2 ${PROJECT_ROOT}/download
+mv expat-2.2.6-RENAMED-VULNERABLE-PLEASE-USE-2.4.1-INSTEAD.tar.bz2 ${PROJECT_ROOT}/download/expat-2.2.6.tar.bz2
 
 //Now it is built crosstool-ng
 ./ct-ng build
